@@ -1,0 +1,19 @@
+<launch>  
+
+
+	<!-- ZED 1280 X 720  -->
+	<node pkg="ORB_SLAM2_PointMap_SegNetM" name="STDyn_RealTime" type="STDyn_RealTime" args="/home/lapyr/ORB_SLAM2/Vocabulary/ORBvoc.txt $(find ORB_SLAM2_PointMap_SegNetM)/Zed720.yaml $(find ORB_SLAM2_PointMap_SegNetM)/prototxts/segnet_pascal.prototxt $(find ORB_SLAM2_PointMap_SegNetM)/models/segnet_pascal.caffemodel $(find ORB_SLAM2_PointMap_SegNetM)/tools/pascal.png" output="screen" >
+
+	
+	<remap from="/camera/left_color_rect" to ="/zed_node/left/image_rect_color"/> 
+	<remap from="/camera/right_color_rect" to ="/zed_node/right/image_rect_color"/> 
+	<remap from="/camera/depth_registered" to ="/zed_node/depth/depth_registered"/> 
+
+	</node>
+
+	<!-- Run other launch file -->
+    <include file="$(find ORB_SLAM2_PointMap_SegNetM)/launch/Octomap.launch" />
+	<include file="$(find ORB_SLAM2_PointMap_SegNetM)/launch/transform.launch" />
+	<node pkg="rviz" name="rviz" type="rviz" /> 
+	
+</launch>

@@ -1,0 +1,80 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# Camera Parameters. Adjust them!
+#--------------------------------------------------------------------------------------------
+
+# Camera calibration and distortion parameters (OpenCV) 
+
+Camera.fx: 2.063200e+03 #697.75
+Camera.fy: 2.062400e+03 #697.75
+Camera.cx: 9.783000e+02 #633.139
+Camera.cy: 5.847000e+02 #360.763
+
+#Camera.k1: -0.168816
+#Camera.k2: 0.0245235
+#Camera.p1: 0.0
+#Camera.p2: 0.0
+#Camera.k3: 0.0
+
+Camera.k1: 0.0
+Camera.k2: 0.0
+Camera.p1: 0.0
+Camera.p2: 0.0
+Camera.k3: 0.0
+
+Camera.width: 881
+Camera.height: 400
+
+
+# Camera frames per second 
+Camera.fps: 30.0
+
+# IR projector baseline times fx (aprox.)
+#Camera.bf: 120.0
+Camera.bf: 111.412
+#Camera.bf: 40.0
+#Camera.bf: 41.96
+
+# Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
+Camera.RGB: 0
+
+# Close/Far threshold. Baseline times.
+ThDepth: 500.0
+
+# Deptmap values factor
+DepthMapFactor: 1.0
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+
+# ORB Extractor: Number of features per image
+ORBextractor.nFeatures: 2400
+
+# ORB Extractor: Scale factor between levels in the scale pyramid 	
+ORBextractor.scaleFactor: 1.2
+
+# ORB Extractor: Number of levels in the scale pyramid	
+ORBextractor.nLevels: 8
+
+# ORB Extractor: Fast threshold
+# Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
+# Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
+# You can lower these values if your images have low contrast			
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+
+PointCloudMapping.Resolution: 0.05
+PointCloudMapping.DepthMaxPC: 5
+
+
+
+
+
+
+
