@@ -9,9 +9,9 @@ STDyn-SLAM released under a [GPLv3 license](https://github.com/DanielaEsparza/ST
 #Run
 
 Before executing, please run the next in the terminal. Modify ROOT_PATH by your container folder of STDyn-SLAM.
-´´
+```
 export  ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:ROOT_PATH/DS-SLAM/Examples/ROS/ORB_SLAM2_PointMap_SegNetM
-´´
+```
 
 ## Real-Time Stereo
 
