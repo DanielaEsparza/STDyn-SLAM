@@ -6,7 +6,7 @@ STDyn-SLAM: A Stereo Vision and Semantic Segmentation Approach for SLAM in Dynam
 # License
 STDyn-SLAM released under a [GPLv3 license](https://github.com/DanielaEsparza/STDyn-SLAM/blob/master/LICENSE)
 
-#Run
+# Run
 
 Before executing, please run the next in the terminal. Modify ROOT_PATH by your container folder of STDyn-SLAM.
 ```
