@@ -5,4 +5,4 @@ STDyn-SLAM: A Stereo Vision and Semantic Segmentation Approach for SLAM in Dynam
 
 # License
 STDyn-SLAM released under a https://github.com/DanielaEsparza/STDyn-SLAM/blob/master/LICENSE
-(LICENSE)
+(../LICENSE)
