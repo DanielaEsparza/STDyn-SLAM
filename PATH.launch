@@ -1,0 +1,21 @@
+<launch>  
+
+	<!-- orb slam  -->
+	<!--node pkg="ORB_SLAM2_PointMap_SegNetM" name="TUM" type="TUM" args="$(find ORB_SLAM2_PointMap_SegNetM)/../../../Vocabulary/ORBvoc.bin $(find ORB_SLAM2_PointMap_SegNetM)/TUM3.yaml $(find ORB_SLAM2_PointMap_SegNetM)/prototxts/segnet_pascal.prototxt $(find ORB_SLAM2_PointMap_SegNetM)/models/segnet_pascal.caffemodel $(find ORB_SLAM2_PointMap_SegNetM)/tools/pascal.png" output="screen" /-->
+
+	<!-- ZED 1280 X 720  -->
+	<node pkg="ORB_SLAM2_PointMap_SegNetM" name="STDyn_Path" type="STDyn_Path" args="/home/lapyr/ORB_SLAM2/Vocabulary/ORBvoc.txt $(find ORB_SLAM2_PointMap_SegNetM)/Zed720.yaml $(find ORB_SLAM2_PointMap_SegNetM)/prototxts/segnet_pascal.prototxt $(find ORB_SLAM2_PointMap_SegNetM)/models/segnet_pascal.caffemodel $(find ORB_SLAM2_PointMap_SegNetM)/tools/pascal.png" output="screen" />
+
+
+	<param name="folderleft" value="Img_left"/>
+	<param name="folderright" value="Img_right"/>
+	<param name="foldertime" value="Img_depth"/>
+	<param name="trajectory_KITTI" value="Trajectory_KITTI.txt"/>
+
+
+	<!-- Run other launch file -->
+    <include file="$(find ORB_SLAM2_PointMap_SegNetM)/launch/Octomap.launch" />
+	<include file="$(find ORB_SLAM2_PointMap_SegNetM)/launch/transform.launch" />
+	<node pkg="rviz" name="rviz" type="rviz" /> 
+	
+</launch>
