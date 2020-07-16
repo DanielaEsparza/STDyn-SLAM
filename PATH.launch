@@ -10,7 +10,7 @@
 	<param name="folderleft" value="Img_left"/>
 	<param name="folderright" value="Img_right"/>
 	<param name="foldertime" value="Img_depth"/>
-	<param name="trajectory_KITTI" value="Trajectory_KITTI.txt"/>
+	<param name="trajectory_KITTI" value="Trajectory.txt"/>
 
 
 	<!-- Run other launch file -->
