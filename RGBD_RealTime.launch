@@ -1,0 +1,18 @@
+<launch>  
+
+
+	<node pkg="ORB_SLAM2_PointMap_SegNetM" name="RGBD_RealTime" type="RGBD_RealTime" args="/home/lapyr/ORB_SLAM2/Vocabulary/ORBvoc.txt $(find ORB_SLAM2_PointMap_SegNetM)/TUM3.yaml $(find ORB_SLAM2_PointMap_SegNetM)/prototxts/segnet_pascal.prototxt $(find ORB_SLAM2_PointMap_SegNetM)/models/segnet_pascal.caffemodel $(find ORB_SLAM2_PointMap_SegNetM)/tools/pascal.png" output="screen" >
+
+	
+	<remap from="/camera/rgbd_image" to ="/camera/rgb/image_rect_color"/> 
+	<remap from="/camera/depth_registered" to ="/camera/depth_registered/image"/> 
+
+	</node>
+
+
+	<!-- Run other launch file -->
+    <include file="$(find ORB_SLAM2_PointMap_SegNetM)/launch/Octomap.launch" />
+	<include file="$(find ORB_SLAM2_PointMap_SegNetM)/launch/transform.launch" />
+	<node pkg="rviz" name="rviz" type="rviz" /> 
+	
+</launch>
