@@ -1,4 +1,4 @@
-/**
+/*
  *--------------------------------------------------------------------------------------------------
  * DS-SLAM: A Semantic Visual SLAM towards Dynamic Environments
 　*　Author(s):
@@ -30,24 +30,16 @@
  * https://github.com/ivipsourcecode/DS-SLAM/blob/master/LICENSE
  *--------------------------------------------------------------------------------------------------
  */
- 
 
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Pose.h>
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
-#include <ros/ros.h>
+
 #include <octomap/octomap.h>    
 #include <octomap/ColorOcTree.h>
-#include <cv_bridge/cv_bridge.h>
-#include <message_filters/subscriber.h>
-#include <message_filters/time_synchronizer.h>
-#include <message_filters/sync_policies/approximate_time.h>
-#include "pointcloudmapping.h"
-#include "LoopClosing.h"
  
 #include <../../../include/System.h>
-#include <iostream>
 
 using namespace octomap;
 
@@ -57,8 +49,6 @@ ros::Publisher odom_pub;
 
 geometry_msgs::PoseStamped Cam_Pose;
 geometry_msgs::PoseWithCovarianceStamped Cam_odom;
-boost::shared_ptr<PointCloudMapping> tumPointCloudMapping;
-boost::shared_ptr<LoopClosing> tumLoopClosing;
 
 cv::Mat Camera_Pose;
 tf::Transform orb_slam;
@@ -73,74 +63,140 @@ octomap::ColorOcTree tree( 0.05 );
 
 void Pub_CamPose(cv::Mat &pose);
 
-class ImageGrabber
-{
-public:
-    ImageGrabber(ORB_SLAM2::System* pSLAM):mpSLAM(pSLAM){}
-
-    void GrabStereo(const sensor_msgs::ImageConstPtr& msgLeft,const sensor_msgs::ImageConstPtr& msgRight,const sensor_msgs::ImageConstPtr& msgD);
-
-    ORB_SLAM2::System* mpSLAM;
-    
-    bool do_rectify;
-    cv::Mat M1l,M2l,M1r,M2r;
-};
+void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageFilenamesRGB,
+                vector<string> &vstrImageFilenamesD, vector<double> &vTimestamps);
+typedef octomap::ColorOcTree::leaf_iterator it_t;
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "STDyn_SLAM");
+    ros::init(argc, argv, "TUM");
     ros::start();
     ::google::InitGoogleLogging(argv[0]);
    
-    if(argc != 6)
+    if(argc != 8)
     {
         cerr << endl << "Usage: TUM path_to_vocabulary path_to_settings path_to_sequence path_to_association path_to_prototxt path_to_caffemodel path_to_pascal.png" << endl;
         return 1;
     }
-    
+
     // Retrieve paths to images
+    vector<string> vstrImageFilenamesRGB;
+    vector<string> vstrImageFilenamesD;
+    //vector<string> vstrImageFilenamesS;
     vector<double> vTimestamps;
+    string strAssociationFilename = string(argv[4]);
+    LoadImages(strAssociationFilename, vstrImageFilenamesRGB, vstrImageFilenamesD, vTimestamps);
+    
+    // Check consistency in the number of images and depthmaps
+    int nImages = vstrImageFilenamesRGB.size();
+    if(vstrImageFilenamesRGB.empty())
+    {
+        cerr << endl << "No images found in provided path." << endl;
+        return 1;
+    }
+    else if(vstrImageFilenamesD.size()!=vstrImageFilenamesRGB.size())
+    {
+        cerr << endl << "Different number of images for rgb and depth." << endl;
+        return 1;
+    }
     
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM2::Viewer *viewer;
     viewer = new ORB_SLAM2::Viewer();
-    ORB_SLAM2::System SLAM(argv[1],argv[2], argv[3],argv[4],argv[5],ORB_SLAM2::System::STEREO, viewer);
+    ORB_SLAM2::System SLAM(argv[1],argv[2], argv[5],argv[6],argv[7],ORB_SLAM2::System::RGBD, viewer);
     usleep(50);
-
-    ImageGrabber igb(&SLAM);
-
+    // Vector for tracking time statistics
+    vector<double> vTimesTrack;
+    vTimesTrack.resize(nImages);
+    vector<double> vOrbTime;
+    vOrbTime.resize(nImages);
+    vector<double> vMovingTime;
+    vMovingTime.resize(nImages);
+    double segmentationTime=0;
     cout << endl << "-------" << endl;
     cout << "Start processing sequence ..." << endl;
-    //cout << "Images in the sequence: " << nImages << endl << endl;
+    cout << "Images in the sequence: " << nImages << endl << endl;
 
     // Main loop
+    cv::Mat imRGB, imD;
     ros::Rate loop_rate(50);
     ros::NodeHandle nh;
-
+    
     CamPose_Pub = nh.advertise<geometry_msgs::PoseStamped>("/Camera_Pose",1);
     Camodom_Pub = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("/Camera_Odom", 1);
     odom_pub = nh.advertise<nav_msgs::Odometry>("odom", 50);
 
+    current_time = ros::Time::now();
+    last_time = ros::Time::now();
+    int ni=0;
+    while(ros::ok()&&ni<nImages)
+    {
+        imRGB = cv::imread(string(argv[3])+"/"+vstrImageFilenamesRGB[ni],CV_LOAD_IMAGE_UNCHANGED);
+        imD = cv::imread(string(argv[3])+"/"+vstrImageFilenamesD[ni],CV_LOAD_IMAGE_UNCHANGED);
+        double tframe = vTimestamps[ni];
+        if(imRGB.empty())
+        {
+            cerr << endl << "Failed to load image at: "
+                 << string(argv[3]) << "/" << vstrImageFilenamesRGB[ni] << endl;
+            return 1;
+        }
+	    std::chrono::steady_clock::time_point t3 = std::chrono::steady_clock::now();
+	    Camera_Pose =  SLAM.TrackRGBD(imRGB,imD,tframe);
+	    std::chrono::steady_clock::time_point t4 = std::chrono::steady_clock::now();
+	    double ttrack= std::chrono::duration_cast<std::chrono::duration<double> >(t4 - t3).count();
+        cout << "SLAM TrackRGBD all time =" << ttrack*1000 << endl << endl;
+	    double orbTimeTmp=SLAM.mpTracker->orbExtractTime;
+	    double movingTimeTmp=SLAM.mpTracker->movingDetectTime;
+	    segmentationTime=SLAM.mpSegment->mSegmentTime;
+	    Pub_CamPose(Camera_Pose); 
+        vTimesTrack[ni]=ttrack;	
+	    vOrbTime[ni]=orbTimeTmp;
+ 	    vMovingTime[ni]=movingTimeTmp;
+        // Wait to load the next frame
+        double T=0;
+        if(ni<nImages-1)
+            T = vTimestamps[ni+1]-tframe;
+        else if(ni>0)
+            T = tframe-vTimestamps[ni-1];
 
-	message_filters::Subscriber<sensor_msgs::Image> left_sub(nh, "/camera/left_color_rect", 1);
-    message_filters::Subscriber<sensor_msgs::Image> right_sub(nh, "/camera/right_color_rect", 1);
-    message_filters::Subscriber<sensor_msgs::Image> depth_sub(nh, "/camera/depth_registered", 1);
-	message_filters::TimeSynchronizer<sensor_msgs::Image, sensor_msgs::Image, sensor_msgs::Image> sync(left_sub,right_sub,depth_sub, 100);
-	sync.registerCallback(boost::bind(&ImageGrabber::GrabStereo,&igb,_1,_2,_3));
-
-
-	//*****
-
-    ros::spin();
-    
+        if(ttrack<T)
+	    {
+            usleep((T-ttrack)*1e6);
+	    }
+	    ni++;
+        ros::spinOnce();
+	    loop_rate.sleep();
+    }
     // Stop all threads
     SLAM.Shutdown();
     
- 
+    // Tracking time statistics
+    sort(vTimesTrack.begin(),vTimesTrack.end());
+    double totaltime = 0;
+    for(int ni=0; ni<nImages; ni++)
+    {
+        totaltime+=vTimesTrack[ni];
+    }
+    double orbTotalTime = 0;
+    for(int ni=0; ni<nImages; ni++)
+    {
+        orbTotalTime+=vOrbTime[ni];
+    }
+    double movingTotalTime = 0;
+    for(int ni=0; ni<nImages; ni++)
+    {
+        movingTotalTime+=vMovingTime[ni];
+    }
+    cout << "-------" << endl << endl;
+    cout << "median tracking time: " << vTimesTrack[nImages/2] << endl;
+    cout << "mean tracking time: " << totaltime/nImages << endl;
+    cout << "mean orb extract time =" << orbTotalTime/nImages <<  endl;
+    cout << "mean moving detection time =" << movingTotalTime/nImages<<  endl;
+    cout << "mean segmentation time =" << segmentationTime/nImages<<  endl;
+   
     // Save camera trajectory
-    SLAM.SaveTrajectoryTUM("/home/lapyr/catkin_dsslam/src/DS-SLAM/CameraTrajectoryDSSLAM.txt");
-    SLAM.SaveKeyFrameTrajectoryTUM("/home/lapyr/catkin_dsslam/src/DS-SLAM/KeyFrameTrajectory.txt");	
-    SLAM.SaveTrajectoryKITTI("/home/lapyr/catkin_dsslam/src/DS-SLAM/FrameTrajectory_KITTI_Format.txt");
+    SLAM.SaveTrajectoryTUM("CameraTrajectory.txt");
+    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");	
     
     ros::shutdown();
     return 0;
@@ -154,9 +210,8 @@ void Pub_CamPose(cv::Mat &pose)
 	orb_slam_broadcaster = new tf::TransformBroadcaster;
 	if(pose.dims<2 || pose.rows < 3)
 	{
-        	Rwc = Rwc;
+        Rwc = Rwc;
 		twc = twc;
-		cout << pose.dims << endl;
 	}
 	else
 	{
@@ -228,56 +283,29 @@ void Pub_CamPose(cv::Mat &pose)
 	}
 }
 
-
-void ImageGrabber::GrabStereo(const sensor_msgs::ImageConstPtr& msgLeft,const sensor_msgs::ImageConstPtr& msgRight,const sensor_msgs::ImageConstPtr& msgD)
+void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageFilenamesRGB,
+                vector<string> &vstrImageFilenamesD, vector<double> &vTimestamps)
 {
-    // Copy the ros image message to cv::Mat.
-    cv_bridge::CvImageConstPtr cv_ptrLeft;
-    try
+    ifstream fAssociation;
+    fAssociation.open(strAssociationFilename.c_str());
+    while(!fAssociation.eof())
     {
-        cv_ptrLeft = cv_bridge::toCvShare(msgLeft);
-    }
-    catch (cv_bridge::Exception& e)
-    {
-        ROS_ERROR("cv_bridge exception: %s", e.what());
-        return;
-    }
+        string s;
+        getline(fAssociation,s);
+        if(!s.empty())
+        {
+            stringstream ss;
+            ss << s;
+            double t;
+            string sRGB, sD;
 
-    cv_bridge::CvImageConstPtr cv_ptrRight;
-    try
-    {
-        cv_ptrRight = cv_bridge::toCvShare(msgRight);
+            ss >> t;
+            vTimestamps.push_back(t);
+            ss >> sRGB;
+            vstrImageFilenamesRGB.push_back(sRGB);
+            ss >> t;
+            ss >> sD;
+            vstrImageFilenamesD.push_back(sD);
+        }
     }
-    catch (cv_bridge::Exception& e)
-    {
-        ROS_ERROR("cv_bridge exception: %s", e.what());
-        return;
-    }
-    
-    cv_bridge::CvImageConstPtr cv_ptrD;
-    try
-    {
-        cv_ptrD = cv_bridge::toCvShare(msgD);
-    }
-    catch (cv_bridge::Exception& e)
-    {
-        ROS_ERROR("cv_bridge exception: %s", e.what());
-        return;
-    }
-    
-    cout << "SLAM inicio " << endl;
-	std::chrono::steady_clock::time_point t3 = std::chrono::steady_clock::now();
-	Camera_Pose =  mpSLAM->TrackStereo(cv_ptrLeft->image, cv_ptrRight->image, cv_ptrD->image, cv_ptrLeft->header.stamp.toSec());
-	
-	std::chrono::steady_clock::time_point t4 = std::chrono::steady_clock::now();
-	double ttrack= std::chrono::duration_cast<std::chrono::duration<double> >(t4 - t3).count();
-    cout << "SLAM TrackRGBD all time =" << ttrack*1000 << endl << endl;
-	Pub_CamPose(Camera_Pose);
-	
-	bool flag_pc_finish=tumPointCloudMapping->flagFinishPC();
-	
-	while(!flag_pc_finish)
-	{
-		flag_pc_finish=tumPointCloudMapping->flagFinishPC();
-	}
 }
