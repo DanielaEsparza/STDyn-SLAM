@@ -531,7 +531,6 @@ void Frame::ProcessMovingObject(const cv::Mat &imgray)
 void Frame::SetPose(cv::Mat Tcw)
 {
     mTcw = Tcw.clone();
-	//cout << " mTcw = " << mTcw.empty() << endl;
     UpdatePoseMatrices();
 }
 
