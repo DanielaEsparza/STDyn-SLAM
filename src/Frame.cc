@@ -248,9 +248,6 @@ void Frame::CalculEverythingStereo(cv::Mat &imRGB,const cv::Mat &imGray, const c
         if(flagprocess == 1)
         break;
     }
-    
-	mvKeysPreGraphleft.clear();
-	mvKeysPreGraphright.clear();
 	
     if(!T_M.empty() && flagprocess )
     {
