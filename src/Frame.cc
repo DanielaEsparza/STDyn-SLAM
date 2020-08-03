@@ -254,12 +254,6 @@ void Frame::CalculEverythingStereo(cv::Mat &imRGB,const cv::Mat &imGray, const c
 	
     if(!T_M.empty() && flagprocess )
     {
-		for (int level_pyr=0; level_pyr<mvKeysTemp.size(); level_pyr++)
-			mvKeysPreGraphleft.insert(mvKeysPreGraphleft.end(),mvKeysTemp[level_pyr].begin(),mvKeysTemp[level_pyr].end());
-			
-		for (int level_pyr=0; level_pyr<mvKeysTempRight.size(); level_pyr++)
-			mvKeysPreGraphright.insert(mvKeysPreGraphright.end(),mvKeysTempRight[level_pyr].begin(),mvKeysTempRight[level_pyr].end());
-		
         std::chrono::steady_clock::time_point tc1 = std::chrono::steady_clock::now();
         flag_mov = mpORBextractorLeft->CheckMovingKeyPoints(imGray,imS,mvKeysTemp,T_M);
         std::chrono::steady_clock::time_point tc2 = std::chrono::steady_clock::now();
