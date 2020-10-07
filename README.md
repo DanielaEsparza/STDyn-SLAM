@@ -28,5 +28,14 @@ roslaunch STEREO_RealTime.launch
 
 ## KITTI Dataset
 
+```
+cd src/STDyn-SLAM
+roslaunch KITTI.launch
+```
 
 ## Own Sequence
+
+```
+cd src/STDyn-SLAM
+roslaunch PATH.launch
+```
