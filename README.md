@@ -10,6 +10,16 @@ STDyn-SLAM released under a [GPLv3 license](https://github.com/DanielaEsparza/ST
 
 ## Requisites
 
+The necessary prerequisites are found in [ORB-SLAM2](https://github.com/raulmur/ORB_SLAM2):
+- Pangolin
+- OpenCV
+- Eigen3
+- DBoW2 and g2o
+- ROS
+
+### SegNet
+Download and compile the SegNet package in /Examples/ROS/ORB_SLAM2_PointMap_SegNetM (https://github.com/TimoSaemann/caffe-segnet-cudnn5)
+
 # Run
 
 Before executing, please run the next in the terminal. Modify ROOT_PATH by your container folder of STDyn-SLAM.
