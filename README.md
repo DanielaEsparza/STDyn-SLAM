@@ -10,12 +10,15 @@ STDyn-SLAM released under a [GPLv3 license](https://github.com/DanielaEsparza/ST
 
 ## Requisites
 
-The necessary prerequisites are found in [ORB-SLAM2](https://github.com/raulmur/ORB_SLAM2):
+The necessary prerequisites are found in [ORB-SLAM2](https://github.com/raulmur/ORB_SLAM2) and DS-SLAM(https://github.com/ivipsourcecode/DS-SLAM):
 - Pangolin
 - OpenCV
 - Eigen3
 - DBoW2 and g2o
 - ROS
+
+- SegNet
+- OctoMap and RVIZ
 
 ### SegNet
 Download and compile the SegNet package in /Examples/ROS/ORB_SLAM2_PointMap_SegNetM (https://github.com/TimoSaemann/caffe-segnet-cudnn5).
