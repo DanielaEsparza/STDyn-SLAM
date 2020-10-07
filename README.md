@@ -34,7 +34,7 @@ export  ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:ROOT_PATH/STDyn-SLAM/Examples/ROS/O
 
 ## Real-Time Stereo
 
-Execute the ros package os the stereo camera, modify the [STEREO_RealTime.launch](https://github.com/DanielaEsparza/STDyn-SLAM/blob/master/STEREO_RealTime.launch)
+Execute the ros package of the stereo camera, modify the [STEREO_RealTime.launch](https://github.com/DanielaEsparza/STDyn-SLAM/blob/master/STEREO_RealTime.launch)
 
 ```
 cd src/STDyn-SLAM
