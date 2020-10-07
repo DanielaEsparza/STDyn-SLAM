@@ -58,12 +58,16 @@ roslaunch STEREO_RealTime.launch
 
 ## KITTI Dataset
 
+Modify the KITTI Dataset path in the KITTI.launch
+
 ```
 cd src/STDyn-SLAM
 roslaunch KITTI.launch
 ```
 
 ## Own Sequence
+
+Modify the path of your sequence in the PATH.launch
 
 ```
 cd src/STDyn-SLAM
