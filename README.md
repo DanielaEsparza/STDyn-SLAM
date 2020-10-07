@@ -8,7 +8,7 @@ STDyn-SLAM released under a [GPLv3 license](https://github.com/DanielaEsparza/ST
 
 # Install
 
-## Prequisites
+## Prerequisites
 
 The necessary prerequisites are found in [ORB-SLAM2](https://github.com/raulmur/ORB_SLAM2) and DS-SLAM(https://github.com/ivipsourcecode/DS-SLAM):
 - Pangolin
@@ -25,10 +25,17 @@ Download and compile the SegNet package in /Examples/ROS/ORB_SLAM2_PointMap_SegN
 
 You also can download a new version of SegNet from (https://github.com/navganti/caffe-segnet-cudnn7). But you have to modify the root of SegNet in the CmakeLists.txt from /STDyn-SLAM, STDyn-SLAM/Examples/ROS/ORB_SLAM2_PointMap_SegNetM/ and STDyn-SLAM/Examples/ROS/ORB_SLAM2_PointMap_SegNetM/libsegmentation
 
+### OctoMap
+You have to create a catkin workspace and download the OctoMap in /src
+
 ## Building STDyn-SLAM
 
+Change the name of the catkin workspace to yours.
+
 ```
-cd src/STDyn-SLAM
+cd catkin_ws/src
+git clone https://github.com/DanielaEsparza/STDyn-SLAM
+cd STDyn-SLAM
 chmod +x BUILD.sh
 ./BUILD.sh
 ```
