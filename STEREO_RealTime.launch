@@ -2,7 +2,7 @@
 
 
 	<!-- ZED 1280 X 720  -->
-	<node pkg="ORB_SLAM2_PointMap_SegNetM" name="STDyn_RealTime" type="STDyn_RealTime" args="/home/lapyr/ORB_SLAM2/Vocabulary/ORBvoc.txt $(find ORB_SLAM2_PointMap_SegNetM)/Zed720.yaml $(find ORB_SLAM2_PointMap_SegNetM)/prototxts/segnet_pascal.prototxt $(find ORB_SLAM2_PointMap_SegNetM)/models/segnet_pascal.caffemodel $(find ORB_SLAM2_PointMap_SegNetM)/tools/pascal.png" output="screen" >
+	<node pkg="ORB_SLAM2_PointMap_SegNetM" name="STDyn_RealTime" type="STDyn_RealTime" args="Vocabulary/ORBvoc.txt $(find ORB_SLAM2_PointMap_SegNetM)/Zed720.yaml $(find ORB_SLAM2_PointMap_SegNetM)/prototxts/segnet_pascal.prototxt $(find ORB_SLAM2_PointMap_SegNetM)/models/segnet_pascal.caffemodel $(find ORB_SLAM2_PointMap_SegNetM)/tools/pascal.png" output="screen" >
 
 	
 	<remap from="/camera/left_color_rect" to ="/zed_node/left/image_rect_color"/> 
