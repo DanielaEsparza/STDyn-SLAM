@@ -2,7 +2,7 @@
 
 
 
-	<node pkg="ORB_SLAM2_PointMap_SegNetM" name="TUM" type="TUM" args="/home/lapyr/ORB_SLAM2/Vocabulary/ORBvoc.txt $(find ORB_SLAM2_PointMap_SegNetM)/TUM3.yaml PATH_TO_SEQUENCE PATH_TO_SEQUENCE/associate.txt $(find ORB_SLAM2_PointMap_SegNetM)/prototxts/segnet_pascal.prototxt $(find ORB_SLAM2_PointMap_SegNetM)/models/segnet_pascal.caffemodel $(find ORB_SLAM2_PointMap_SegNetM)/tools/pascal.png" output="screen" />
+	<node pkg="ORB_SLAM2_PointMap_SegNetM" name="TUM" type="TUM" args="Vocabulary/ORBvoc.txt $(find ORB_SLAM2_PointMap_SegNetM)/TUM3.yaml PATH_TO_SEQUENCE PATH_TO_SEQUENCE/associate.txt $(find ORB_SLAM2_PointMap_SegNetM)/prototxts/segnet_pascal.prototxt $(find ORB_SLAM2_PointMap_SegNetM)/models/segnet_pascal.caffemodel $(find ORB_SLAM2_PointMap_SegNetM)/tools/pascal.png" output="screen" />
 
 
 	<!-- Run other launch file -->
