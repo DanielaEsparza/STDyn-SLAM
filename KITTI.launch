@@ -1,6 +1,6 @@
 <launch>  
 
-	<node pkg="ORB_SLAM2_PointMap_SegNetM" name="KITTI" type="KITTI" args="/home/lapyr/ORB_SLAM2/Vocabulary/ORBvoc.txt $(find ORB_SLAM2_PointMap_SegNetM)/KITTI04-12.yaml $(find ORB_SLAM2_PointMap_SegNetM)/prototxts/segnet_pascal.prototxt $(find ORB_SLAM2_PointMap_SegNetM)/models/segnet_pascal.caffemodel $(find ORB_SLAM2_PointMap_SegNetM)/tools/pascal.png" output="screen" />
+	<node pkg="ORB_SLAM2_PointMap_SegNetM" name="KITTI" type="KITTI" args="Vocabulary/ORBvoc.txt $(find ORB_SLAM2_PointMap_SegNetM)/KITTI04-12.yaml $(find ORB_SLAM2_PointMap_SegNetM)/prototxts/segnet_pascal.prototxt $(find ORB_SLAM2_PointMap_SegNetM)/models/segnet_pascal.caffemodel $(find ORB_SLAM2_PointMap_SegNetM)/tools/pascal.png" output="screen" />
 
 
 	<param name="folderleft" value="/10/image_2/*.*"/>
