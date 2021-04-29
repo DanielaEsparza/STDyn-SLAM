@@ -377,12 +377,10 @@ bool Tracking::_Track_full()
 
         if(mVelocity.empty() || mCurrentFrame.mnId<mnLastRelocFrameId+2)
         {
-		//cout << "_track_full = if" << endl;
             bOK = TrackReferenceKeyFrame();
         }
         else
         {
-		//cout << "_track_full = else" << endl;
             bOK = TrackWithMotionModel();
             if(!bOK)
                 bOK = TrackReferenceKeyFrame();
@@ -398,8 +396,6 @@ bool Tracking::_Track_full()
 bool Tracking::_Track_loc_only()
 {
     bool bOK;
-
-	//cout << "_track_loc_fully " << endl;
 
     if(mState==LOST)
 	{
